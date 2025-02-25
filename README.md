@@ -1,79 +1,33 @@
-terraform {
-  required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
-    }
-  }
-  required_version = ">=1.8.4" /*Многострочный комментарий.
- Требуемая версия terraform */
-}
+Задание 1.
+пункт 2
+согласно .gitignore файлу, личную, секретную информацию (логины, пароли, ключи, токены и т. д.) допустимо сохранять в:
 
-#provider "docker" {
-#  host = "ssh://user@158.160.139.48"
-#}
+personal.auto.tfvars
 
-#resource "random_password" "random_string" {
-#  length      = 16
-#  special     = false
-#  min_upper   = 1
-#  min_lower   = 1
-#  min_numeric = 1
-#}
+Этот файл указан в исключениях а все остальные файлы, включая .tfstate и .terraform/*, попадают под игнорирование.
 
-#resource "docker_image" "nginx" { # Указано имя ресурса
-#  name         = "nginx:latest"
-#  keep_locally = true
-#}
+personal.auto.tfvars можно использовать для хранения секретных переменных.
 
-#resource "docker_container" "hello_world" {
-#  image = docker_image.nginx.image_id
-#  name  = "example_${random_password.random_string.result}" # Исправлена ссылка на random_password
+пункт 3
+корневой пароль mysql
+"result": "#!1R_hBB>}0Ksh)+"
 
-#  ports {
-#    internal = 80
-#    external = 9090
-#  }
-#}
+пароль пользователя mysql
+"result": "_4)ijY>}9UM9PZ-D"
 
-provider "docker" {
-  host = "ssh://user@158.160.139.48"  # Замените на IP вашей ВМ
-}
+пункт 4
 
-# Генерация пароля для root MySQL
-resource "random_password" "mysql_root_password" {
-  length  = 16
-  special = true
-  upper   = true
-  lower   = true
-  numeric = true
-}
+Ошибка 1: Некорректное имя ресурса random_password.random_string_FAKE
+Проблема: Ресурс random_password.random_string_FAKE не существует. Правильное имя ресурса — random_password.random_string, а атрибут, который требуется использовать, — result.
+Исправление: Заменить random_password.random_string_FAKE.resulT на random_password.random_string.result.
+Ошибка 2: Недопустимое имя ресурса docker_container.1nginx
+Проблема: В Terraform имена ресурсов не могут начинаться с числа.
+Исправление: Переименовать ресурс с 1nginx на допустимое имя, например, nginx_container или просто nginx.
+Ошибка 3: Отсутствие атрибута name в ресурсе docker_image
+Проблема: Ресурс docker_image должен содержать атрибут name, но в исходном коде он пуст.
+Исправление: Убедиться, что имя ресурса docker_image.nginx задано корректно.
 
-# Генерация пароля для пользователя MySQL
-resource "random_password" "mysql_user_password" {
-  length  = 16
-  special = true
-  upper   = true
-  lower   = true
-  numeric = true
-}
-
-# Создание Docker-контейнера с MySQL
-resource "docker_container" "mysql" {
-  name  = "mysql_container"
-  image = "mysql:8"
-  ports {
-    internal = 3306
-    external = 3306
-  }
-
-  env = [
-    "MYSQL_ROOT_PASSWORD=${random_password.mysql_root_password.result}",
-    "MYSQL_DATABASE=wordpress",
-    "MYSQL_USER=wordpress",
-    "MYSQL_PASSWORD=${random_password.mysql_user_password.result}",
-    "MYSQL_ROOT_HOST=%"
-  ]
-
-  restart = "unless-stopped"
-}
+6
+в чём может быть опасность применения ключа -auto-approve это команда для авто подтверждения действий, может сломать все если код содержит ошибку.
+8
+keep_locally = true: Когда в конфигурации Docker-образа указан этот параметр, Terraform не удаляет образ после того, как он будет использован для создания контейнера. Это гарантирует, что образ останется в локальном хранилище Docker, даже если контейнер будет удалён.
